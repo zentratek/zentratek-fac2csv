@@ -60,10 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
      * Handle file selection
      */
     function handleFiles(files) {
-        // Convert FileList to Array and filter XML files
+        // Convert FileList to Array and filter XML/ZIP files
         const fileArray = Array.from(files).filter(file => {
-            if (!file.name.toLowerCase().endsWith('.xml')) {
-                showAlert(`Archivo ignorado: "${file.name}" (solo se permiten archivos .xml)`, 'warning');
+            const fileName = file.name.toLowerCase();
+            const isValidExtension = fileName.endsWith('.xml') || fileName.endsWith('.zip');
+
+            if (!isValidExtension) {
+                showAlert(`Archivo ignorado: "${file.name}" (solo se permiten archivos .xml o .zip)`, 'warning');
                 return false;
             }
             if (file.size > 10 * 1024 * 1024) {
@@ -121,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInfo.className = 'file-info';
 
         const icon = document.createElement('i');
-        icon.className = 'bi bi-file-earmark-text file-icon';
+        const isZip = file.name.toLowerCase().endsWith('.zip');
+        icon.className = isZip ? 'bi bi-file-earmark-zip file-icon' : 'bi bi-file-earmark-text file-icon';
 
         const nameSpan = document.createElement('span');
         nameSpan.className = 'file-name';
