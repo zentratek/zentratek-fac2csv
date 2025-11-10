@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados - Convertidor DIAN{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Resultados del Procesamiento
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Summary -->
+                <div class="row text-center mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <h2 class="text-primary">{{ processed_count }}</h2>
+                            <p class="text-muted">Facturas procesadas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <h2 class="text-warning">{{ validation_errors|length + parsing_errors|length }}</h2>
+                            <p class="text-muted">Errores</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <h2 class="text-info">{{ total_count }}</h2>
+                            <p class="text-muted">Total archivos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                {% if zip_file %}
+                <div class="d-grid gap-2 mb-4">
+                    <a href="{{ url_for('download_file', filename=zip_file) }}" class="btn btn-success btn-lg">
+                        <i class="bi bi-download"></i>
+                        Descargar ZIP con CSVs
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Errors -->
+                {% if validation_errors or parsing_errors %}
+                <div class="alert alert-warning">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Errores encontrados</h5>
+
+                    {% if validation_errors %}
+                    <h6 class="mt-3">Errores de validación:</h6>
+                    <ul>
+                        {% for error in validation_errors %}
+                        <li><strong>{{ error.file }}</strong>: {{ error.error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if parsing_errors %}
+                    <h6 class="mt-3">Errores de parseo:</h6>
+                    <ul>
+                        {% for error in parsing_errors %}
+                        <li><strong>{{ error.file }}</strong>: {{ error.error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Preview: Summary CSV -->
+                {% if summary_preview %}
+                <div class="mt-4">
+                    <h5><i class="bi bi-file-earmark-spreadsheet"></i> Vista previa: Resumen de Facturas</h5>
+                    <p class="text-muted">Mostrando primeros 10 registros</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    {% if summary_preview[0] %}
+                                        {% for key in summary_preview[0].keys() %}
+                                        <th>{{ key }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in summary_preview %}
+                                <tr>
+                                    {% for value in row.values() %}
+                                    <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Preview: Detail CSV -->
+                {% if detail_preview %}
+                <div class="mt-4">
+                    <h5><i class="bi bi-file-earmark-spreadsheet"></i> Vista previa: Detalle de Líneas</h5>
+                    <p class="text-muted">Mostrando primeros 10 registros</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    {% if detail_preview[0] %}
+                                        {% for key in detail_preview[0].keys() %}
+                                        <th>{{ key }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in detail_preview %}
+                                <tr>
+                                    {% for value in row.values() %}
+                                    <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="mt-4">
+                    <a href="{{ url_for('clear_session') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i>
+                        Procesar Nuevas Facturas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

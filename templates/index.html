@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Subir Facturas XML - Convertidor DIAN{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-cloud-upload"></i>
+                    Subir Facturas XML
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Seleccione uno o más archivos XML de facturas electrónicas DIAN (formato UBL 2.1) para convertir a CSV.
+                </p>
+
+                <form action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-content">
+                            <i class="bi bi-file-earmark-arrow-up drop-zone-icon"></i>
+                            <p class="drop-zone-text">Arrastre archivos XML aquí</p>
+                            <p class="text-muted">o</p>
+                            <label for="fileInput" class="btn btn-outline-primary">
+                                <i class="bi bi-folder2-open"></i> Seleccionar archivos
+                            </label>
+                            <input type="file" name="files" id="fileInput" class="d-none" multiple accept=".xml">
+                        </div>
+                    </div>
+
+                    <!-- File List -->
+                    <div id="fileList" class="mt-3" style="display: none;">
+                        <h6>Archivos seleccionados:</h6>
+                        <div id="fileListContent" class="list-group"></div>
+                    </div>
+
+                    <!-- File Constraints Info -->
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Límites:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Extensión: solo archivos .xml</li>
+                            <li>Tamaño máximo: 10MB por archivo</li>
+                            <li>Máximo: 50 archivos simultáneos</li>
+                        </ul>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                            <i class="bi bi-gear-fill"></i>
+                            Procesar Facturas
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-question-circle"></i>
+                    ¿Cómo funciona?
+                </h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Seleccione uno o más archivos XML de facturas DIAN</li>
+                    <li>Haga clic en "Procesar Facturas"</li>
+                    <li>La aplicación generará dos archivos CSV:
+                        <ul>
+                            <li><strong>facturas_resumen.csv</strong> - Una fila por factura</li>
+                            <li><strong>facturas_detalle.csv</strong> - Una fila por línea de producto/servicio</li>
+                        </ul>
+                    </li>
+                    <li>Descargue el archivo ZIP con ambos CSVs</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

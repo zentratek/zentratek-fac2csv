@@ -1,0 +1,162 @@
+/* Custom styles for fac2csv application */
+
+/* General */
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 3px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 60px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.drop-zone:hover {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.drop-zone.dragover {
+    border-color: #0d6efd;
+    background-color: #cfe2ff;
+    transform: scale(1.02);
+}
+
+.drop-zone-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.drop-zone-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* File List */
+.file-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.file-list-item:last-child {
+    border-bottom: none;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-icon {
+    font-size: 1.5rem;
+    color: #198754;
+}
+
+.file-name {
+    font-weight: 500;
+}
+
+.file-size {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.file-remove {
+    cursor: pointer;
+    color: #dc3545;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.file-remove:hover {
+    transform: scale(1.2);
+}
+
+/* Statistics Boxes */
+.stat-box {
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.stat-box h2 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+/* Table Responsiveness */
+.table-responsive {
+    font-size: 0.875rem;
+}
+
+.table-responsive th {
+    white-space: nowrap;
+    font-weight: 600;
+    background-color: #f1f3f5;
+}
+
+.table-responsive td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .drop-zone {
+        padding: 40px 15px;
+    }
+
+    .drop-zone-icon {
+        font-size: 3rem;
+    }
+
+    .drop-zone-text {
+        font-size: 1rem;
+    }
+
+    .stat-box h2 {
+        font-size: 2rem;
+    }
+}
