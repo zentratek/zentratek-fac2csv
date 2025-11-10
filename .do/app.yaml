@@ -13,7 +13,7 @@ services:
       - key: FLASK_ENV
         value: production
 
-    run_command: gunicorn --bind :8080 --workers 2 --threads 4 --timeout 120 app:app
+    run_command: gunicorn --workers 2 --threads 4 --worker-class=gthread --timeout 120 --bind :8080 --access-logfile - --error-logfile - wsgi:app
 
     http_port: 8080
 
