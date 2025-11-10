@@ -151,6 +151,81 @@ Para producción, usar un servidor WSGI como Gunicorn:
 gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ```
 
+## Deployment en DigitalOcean App Platform
+
+Esta aplicación está lista para ser deployada en DigitalOcean App Platform.
+
+### Opción 1: Deploy desde GitHub (Recomendado)
+
+1. Hacer push del código a GitHub (ya configurado en este repositorio)
+2. Ir a [DigitalOcean App Platform](https://cloud.digitalocean.com/apps)
+3. Hacer clic en **"Create App"**
+4. Seleccionar **"GitHub"** como fuente
+5. Autorizar DigitalOcean a acceder a tu cuenta de GitHub
+6. Seleccionar el repositorio: `zentratek/zentratek-fac2csv`
+7. Seleccionar la rama: `main`
+8. DigitalOcean detectará automáticamente el archivo `.do/app.yaml`
+9. Revisar la configuración:
+   - **Region:** NYC (o la más cercana a tus usuarios)
+   - **Instance Size:** Basic XXS ($5/mes) - puedes escalar después
+   - **Environment Variables:** Ya configuradas en app.yaml
+10. Hacer clic en **"Create Resources"**
+11. Esperar 5-10 minutos mientras DigitalOcean construye y deploya la app
+
+### Opción 2: Deploy Manual con doctl CLI
+
+```bash
+# Instalar doctl
+snap install doctl
+
+# Autenticar
+doctl auth init
+
+# Crear app desde el spec
+doctl apps create --spec .do/app.yaml
+```
+
+### Variables de Entorno (Opcional)
+
+La aplicación usa estas variables de entorno (ya configuradas en `.do/app.yaml`):
+
+- `FLASK_ENV`: `production` (obligatorio)
+- `PORT`: Asignado automáticamente por DigitalOcean
+- `MAX_CONTENT_LENGTH`: `524288000` (500MB para múltiples archivos)
+- `SECRET_KEY`: (opcional) Generado automáticamente si no se configura
+
+Para agregar variables personalizadas:
+1. Ir a tu app en el panel de DigitalOcean
+2. Settings → App-Level Environment Variables
+3. Agregar las variables necesarias
+
+### Auto-deploy
+
+Con la configuración actual (`deploy_on_push: true`), cada push a la rama `main` disparará un deploy automático.
+
+### Costos Estimados
+
+- **Basic XXS:** ~$5/mes (512 MB RAM, 1 vCPU)
+- **Basic XS:** ~$12/mes (1 GB RAM, 1 vCPU) - Recomendado para producción
+- **Professional XS:** ~$25/mes (1 GB RAM, 2 vCPU) - Para alto tráfico
+
+### Monitoreo
+
+Después del deploy, puedes monitorear tu app en:
+- Panel de DigitalOcean → Apps → zentratek-fac2csv
+- Ver logs en tiempo real
+- Métricas de CPU/RAM
+- Historial de deployments
+
+### Escalado
+
+Para escalar la aplicación:
+1. Ir a Settings → Scaling
+2. Ajustar:
+   - **Instance Size:** Basic XS o Professional XS
+   - **Instance Count:** 2+ para alta disponibilidad
+   - **Workers:** Ajustar en app.yaml (actualmente 2 workers, 4 threads)
+
 ## Logging
 
 Los logs se generan en la consola con el siguiente formato:

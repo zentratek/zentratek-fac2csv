@@ -25,14 +25,20 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # For session and flash messages
+
+# Secret key configuration
+# In production, use environment variable; in development, generate random key
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'outputs'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max request size
+
+# Max content length from environment (for production) or default 10MB
+MAX_CONTENT_MB = int(os.environ.get('MAX_CONTENT_LENGTH', 10 * 1024 * 1024))
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_MB
 
 # Ensure directories exist
 ensure_directories(UPLOAD_FOLDER, OUTPUT_FOLDER)
@@ -230,4 +236,8 @@ def clear_session():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Get port from environment (for cloud platforms) or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Only enable debug in development
+    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    app.run(debug=debug, host='0.0.0.0', port=port)
