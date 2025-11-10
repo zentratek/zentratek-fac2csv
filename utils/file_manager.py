@@ -131,6 +131,65 @@ def delete_file(file_path: str) -> bool:
         return False
 
 
+def extract_xml_from_zip(zip_path: str, extract_to: str) -> List[str]:
+    """Extract XML files from a ZIP archive.
+
+    Args:
+        zip_path: Path to ZIP file
+        extract_to: Directory to extract files to
+
+    Returns:
+        List of paths to extracted XML files
+
+    Raises:
+        IOError: If extraction fails or no XML files found
+    """
+    extracted_files = []
+
+    try:
+        # Ensure extraction directory exists
+        ensure_directories(extract_to)
+
+        with zipfile.ZipFile(zip_path, 'r') as zipf:
+            # Get list of XML files in the archive
+            xml_files = [f for f in zipf.namelist() if f.lower().endswith('.xml') and not f.startswith('__MACOSX/')]
+
+            if not xml_files:
+                raise IOError("No XML files found in ZIP archive")
+
+            # Extract only XML files
+            for xml_file in xml_files:
+                # Skip directories
+                if xml_file.endswith('/'):
+                    continue
+
+                # Extract file
+                extracted_path = zipf.extract(xml_file, extract_to)
+
+                # If file was in subdirectory, move it to root of extract_to
+                if os.path.dirname(xml_file):
+                    base_name = os.path.basename(xml_file)
+                    new_path = os.path.join(extract_to, sanitize_filename(base_name))
+
+                    # Move file to root directory
+                    if extracted_path != new_path:
+                        os.rename(extracted_path, new_path)
+                        extracted_path = new_path
+
+                extracted_files.append(extracted_path)
+                logger.info(f"Extracted XML file: {os.path.basename(extracted_path)}")
+
+        logger.info(f"Extracted {len(extracted_files)} XML file(s) from {os.path.basename(zip_path)}")
+        return extracted_files
+
+    except zipfile.BadZipFile:
+        logger.error(f"Invalid ZIP file: {zip_path}")
+        raise IOError("Invalid ZIP file format")
+    except Exception as e:
+        logger.error(f"Error extracting ZIP file {zip_path}: {e}")
+        raise IOError(f"Failed to extract ZIP file: {e}")
+
+
 def get_file_info(file_path: str) -> dict:
     """Get information about a file.
 

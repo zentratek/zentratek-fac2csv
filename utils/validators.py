@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # File constraints
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB in bytes
-ALLOWED_EXTENSION = '.xml'
+ALLOWED_EXTENSIONS = ['.xml', '.zip']
 MAX_FILES = 50
 
 
@@ -19,7 +19,7 @@ class ValidationError(Exception):
 
 
 def validate_file_extension(filename: str) -> bool:
-    """Validate that file has .xml extension.
+    """Validate that file has .xml or .zip extension.
 
     Args:
         filename: Name of the file
@@ -28,10 +28,10 @@ def validate_file_extension(filename: str) -> bool:
         True if extension is valid
 
     Raises:
-        ValidationError: If extension is not .xml
+        ValidationError: If extension is not .xml or .zip
     """
-    if not filename.lower().endswith(ALLOWED_EXTENSION):
-        raise ValidationError(f"Invalid file extension. Only {ALLOWED_EXTENSION} files are allowed.")
+    if not any(filename.lower().endswith(ext) for ext in ALLOWED_EXTENSIONS):
+        raise ValidationError(f"Invalid file extension. Only {', '.join(ALLOWED_EXTENSIONS)} files are allowed.")
     return True
 
 

@@ -13,7 +13,8 @@ from utils.file_manager import (
     ensure_directories,
     cleanup_old_files,
     create_zip_archive,
-    sanitize_filename
+    sanitize_filename,
+    extract_xml_from_zip
 )
 
 # Configure logging
@@ -80,6 +81,7 @@ def upload_files():
         validation_errors = []
         parsing_errors = []
         parsed_invoices = []
+        xml_files_to_process = []
 
         for file in files:
             if file.filename == '':
@@ -95,21 +97,70 @@ def upload_files():
             file.save(file_path)
             uploaded_files.append({'original': filename, 'path': file_path})
 
-            # Validate file
-            is_valid, error_msg = validate_file(file_path, filename)
+            # Check if it's a ZIP file
+            if filename.lower().endswith('.zip'):
+                try:
+                    # Extract XML files from ZIP
+                    extracted_files = extract_xml_from_zip(file_path, app.config['UPLOAD_FOLDER'])
+                    logger.info(f"Extracted {len(extracted_files)} XML files from {filename}")
+
+                    # Add extracted files to processing list
+                    for extracted_file in extracted_files:
+                        xml_files_to_process.append({
+                            'path': extracted_file,
+                            'filename': os.path.basename(extracted_file),
+                            'from_zip': filename
+                        })
+
+                except IOError as e:
+                    validation_errors.append({'file': filename, 'error': str(e)})
+                    logger.error(f"ZIP extraction error for {filename}: {e}")
+                    continue
+            else:
+                # Regular XML file
+                xml_files_to_process.append({
+                    'path': file_path,
+                    'filename': filename,
+                    'from_zip': None
+                })
+
+        # Process all XML files (both direct uploads and extracted from ZIPs)
+        for xml_file_info in xml_files_to_process:
+            file_path = xml_file_info['path']
+            filename = xml_file_info['filename']
+
+            # Validate file (skip extension check for extracted files)
+            if xml_file_info['from_zip']:
+                # For extracted files, only validate size, well-formedness, and namespace
+                from utils.validators import validate_file_size, validate_xml_wellformed, validate_ubl_namespace
+                try:
+                    validate_file_size(file_path)
+                    validate_xml_wellformed(file_path)
+                    validate_ubl_namespace(file_path)
+                    is_valid = True
+                    error_msg = ""
+                except ValidationError as e:
+                    is_valid = False
+                    error_msg = str(e)
+            else:
+                # For direct uploads, run full validation
+                is_valid, error_msg = validate_file(file_path, filename)
 
             if not is_valid:
-                validation_errors.append({'file': filename, 'error': error_msg})
+                source = f"{filename} (from {xml_file_info['from_zip']})" if xml_file_info['from_zip'] else filename
+                validation_errors.append({'file': source, 'error': error_msg})
                 continue
 
             # Parse invoice
             try:
                 invoice_data = parse_single_invoice(file_path)
                 parsed_invoices.append(invoice_data)
-                logger.info(f"Successfully parsed: {filename}")
+                source = f"{filename} (from {xml_file_info['from_zip']})" if xml_file_info['from_zip'] else filename
+                logger.info(f"Successfully parsed: {source}")
             except ParseError as e:
-                parsing_errors.append({'file': filename, 'error': str(e)})
-                logger.error(f"Parse error for {filename}: {e}")
+                source = f"{filename} (from {xml_file_info['from_zip']})" if xml_file_info['from_zip'] else filename
+                parsing_errors.append({'file': source, 'error': str(e)})
+                logger.error(f"Parse error for {source}: {e}")
 
         # Check if we have any valid invoices
         if not parsed_invoices:

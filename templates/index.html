@@ -17,17 +17,22 @@
                     Seleccione uno o más archivos XML de facturas electrónicas DIAN (formato UBL 2.1) para convertir a CSV.
                 </p>
 
+                <div class="alert alert-success">
+                    <i class="bi bi-file-earmark-zip"></i>
+                    <strong>¡Nuevo!</strong> Ahora puede subir archivos <strong>.zip</strong> que contengan múltiples facturas XML. La aplicación extraerá y procesará automáticamente todos los archivos XML dentro del ZIP.
+                </div>
+
                 <form action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data" id="uploadForm">
                     <!-- Drop Zone -->
                     <div class="drop-zone" id="dropZone">
                         <div class="drop-zone-content">
                             <i class="bi bi-file-earmark-arrow-up drop-zone-icon"></i>
-                            <p class="drop-zone-text">Arrastre archivos XML aquí</p>
+                            <p class="drop-zone-text">Arrastre archivos XML o ZIP aquí</p>
                             <p class="text-muted">o</p>
                             <label for="fileInput" class="btn btn-outline-primary">
                                 <i class="bi bi-folder2-open"></i> Seleccionar archivos
                             </label>
-                            <input type="file" name="files" id="fileInput" class="d-none" multiple accept=".xml">
+                            <input type="file" name="files" id="fileInput" class="d-none" multiple accept=".xml,.zip">
                         </div>
                     </div>
 
@@ -42,7 +47,7 @@
                         <i class="bi bi-info-circle"></i>
                         <strong>Límites:</strong>
                         <ul class="mb-0 mt-2">
-                            <li>Extensión: solo archivos .xml</li>
+                            <li>Extensión: archivos <strong>.xml</strong> o <strong>.zip</strong> (con XMLs dentro)</li>
                             <li>Tamaño máximo: 10MB por archivo</li>
                             <li>Máximo: 50 archivos simultáneos</li>
                         </ul>
@@ -69,12 +74,23 @@
             </div>
             <div class="card-body">
                 <ol>
-                    <li>Seleccione uno o más archivos XML de facturas DIAN</li>
-                    <li>Haga clic en "Procesar Facturas"</li>
-                    <li>La aplicación generará dos archivos CSV:
+                    <li>Seleccione uno o más archivos:
                         <ul>
-                            <li><strong>facturas_resumen.csv</strong> - Una fila por factura</li>
-                            <li><strong>facturas_detalle.csv</strong> - Una fila por línea de producto/servicio</li>
+                            <li>Archivos <strong>.xml</strong> individuales de facturas DIAN</li>
+                            <li>Archivos <strong>.zip</strong> que contengan múltiples facturas XML</li>
+                        </ul>
+                    </li>
+                    <li>Haga clic en "Procesar Facturas"</li>
+                    <li>La aplicación:
+                        <ul>
+                            <li>Extraerá automáticamente los XML de archivos ZIP</li>
+                            <li>Validará todos los archivos XML (UBL 2.1)</li>
+                            <li>Generará dos archivos CSV:
+                                <ul>
+                                    <li><strong>facturas_resumen.csv</strong> - Una fila por factura</li>
+                                    <li><strong>facturas_detalle.csv</strong> - Una fila por línea de producto/servicio</li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
                     <li>Descargue el archivo ZIP con ambos CSVs</li>
