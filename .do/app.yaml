@@ -1,5 +1,4 @@
 name: zentratek-fac2csv
-region: nyc
 
 services:
   - name: web
@@ -10,35 +9,13 @@ services:
 
     environment_slug: python
 
-    instance_count: 1
-    instance_size_slug: basic-xxs
-
-    http_port: 8080
-
     envs:
       - key: FLASK_ENV
         value: production
-      - key: MAX_CONTENT_LENGTH
-        value: "524288000"  # 500MB for multiple files
 
-    run_command: gunicorn --bind :$PORT --workers 2 --threads 4 --timeout 120 app:app
+    run_command: gunicorn --bind :8080 --workers 2 --threads 4 --timeout 120 app:app
 
-    routes:
-      - path: /
+    http_port: 8080
 
-# DigitalOcean App Platform Configuration
-#
-# Features:
-# - Auto-deploy from GitHub on push to main
-# - 2 workers, 4 threads per worker (adjust based on traffic)
-# - 120 second timeout (for large file processing)
-# - Basic XXS instance (upgrade to basic-xs or professional-xs for production)
-#
-# To deploy:
-# 1. Push this file to your repository
-# 2. Go to https://cloud.digitalocean.com/apps
-# 3. Click "Create App" -> "GitHub" -> Select your repository
-# 4. DigitalOcean will detect this app.yaml automatically
-# 5. Review settings and click "Create Resources"
-#
-# Cost: ~$5/month for basic-xxs instance
+    instance_count: 1
+    instance_size_slug: basic-xxs
