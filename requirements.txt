@@ -3,3 +3,5 @@ lxml>=5.0.0
 pandas>=2.0.0
 Werkzeug>=3.0.0
 gunicorn>=21.2.0
+waitress>=2.1.2
+python-dotenv>=1.0.0

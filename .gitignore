@@ -1,36 +1,129 @@
+# ============================================================
+# Zentratek FAC2CSV - Git Ignore Configuration
+# ============================================================
+
 # Python
+# ============================================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-venv/
-env/
-ENV/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+
+# Virtual Environments
+# ============================================================
+venv/
+env/
+ENV/
+.venv/
 
 # Flask
+# ============================================================
 instance/
 .webassets-cache
 
-# IDEs
+# Configuration Files (Sensitive)
+# ============================================================
+.env
+*.env
+!.env.example
+
+# Database
+# ============================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+# ============================================================
+logs/
+*.log
+
+# Temporary Files and Directories
+# ============================================================
+uploads/*
+!uploads/.gitkeep
+outputs/*
+!outputs/.gitkeep
+temp/
+tmp/
+
+# Backups
+# ============================================================
+backups/
+*.backup
+*.bak
+
+# Windows Service Manager (NSSM)
+# ============================================================
+nssm/
+C:/nssm/
+*.zip
+
+# Windows
+# ============================================================
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.tmp
+
+# macOS
+# ============================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDEs and Editors
+# ============================================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.project
+.settings/
+.pydevproject
 
-# Temporary files
-uploads/*
-!uploads/.gitkeep
-outputs/*
-!outputs/.gitkeep
+# Documentation Temporaria (Archivos de recuperación)
+# ============================================================
+CODIGO_INSTALAR.txt
+COMO_RECUPERAR_TODO.txt
+LEEME_PRIMERO.txt
+LISTA_ARCHIVOS_RECREAR.txt
+RESUMEN_TRABAJO_CLAUDE.md
 
-# OS
-.DS_Store
-Thumbs.db
+# Test and Development Files
+# ============================================================
+test_*.bat
+iniciar_servidor.bat
+instalar_windows.bat
+reparar_servicio.bat
+configurar_servicio_wrapper.bat
+start_service.bat
+instalar_servicio_simple.bat
+instalar_tarea_programada.bat
+instalar_inicio_automatico.bat
+desinstalar_windows.bat
+start_hidden.vbs
 
-# Logs
-*.log
+# Coverage Reports
+# ============================================================
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Security and Secrets
+# ============================================================
+*.pem
+*.key
+*.cert
+secrets.json
+credentials.json
