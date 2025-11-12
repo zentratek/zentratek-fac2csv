@@ -129,9 +129,36 @@ echo Python version: %PYTHON_VERSION%
 echo [OK] Python version: %PYTHON_VERSION% >> "%LOG_FILE%"
 
 REM Get Python path
-for /f "delims=" %%p in ('where python 2^>nul') do set "PYTHON_PATH=%%p"
+for /f "tokens=*" %%p in ('where python 2^>nul') do (
+    echo %%p | findstr /V "WindowsApps" >nul
+    if !errorlevel! equ 0 (
+        set "PYTHON_PATH=%%p"
+        goto :python_found
+    )
+)
+REM If no real Python found, use whatever is available
+for /f "delims=" %%p in ('where python 2^>nul') do (
+    set "PYTHON_PATH=%%p"
+    goto :python_found
+)
+
+:python_found
 echo Python path: %PYTHON_PATH%
 echo [OK] Python path: %PYTHON_PATH% >> "%LOG_FILE%"
+
+REM Warn if using WindowsApps Python
+echo %PYTHON_PATH% | findstr "WindowsApps" >nul
+if !errorlevel! equ 0 (
+    color 0E
+    echo.
+    echo [ADVERTENCIA] Se detecto Python de Microsoft Store
+    echo Esto puede causar problemas al ejecutar como servicio
+    echo Se recomienda instalar Python desde python.org
+    echo.
+    echo [WARNING] Python de WindowsApps detectado >> "%LOG_FILE%"
+    timeout /t 3
+)
+
 
 REM Check Python version >= 3.10
 for /f "tokens=1,2 delims=." %%a in ("%PYTHON_VERSION%") do (
